@@ -34,7 +34,7 @@ open class OUI(
     url: String = "http://standards-oui.ieee.org/oui/oui.csv"
 ) {
     init {
-        Database.connect("jdbc:sqlite:${savePath}", "org.sqlite.JDBC")
+        Database.connect("jdbc:h2:${savePath}", "org.h2.Driver")
         transaction { SchemaUtils.create(OUIEntries) }
         if(downloadIfNeeded && size() == 0) import(download(url))
     }
