@@ -5,6 +5,7 @@ kotlin oui/mac vendor lookup
 i wanted my own mac vendor lookup library as well as some kotlin practice<br>
 
 ### features
+- [X] cross-platform 
 - [X] downloader
 - [X] importer for persistence
 - [X] lookup
@@ -13,9 +14,13 @@ i wanted my own mac vendor lookup library as well as some kotlin practice<br>
 #### root build.gradle
 add as [dependency](https://jitpack.io/#smthnspcl/oui)
 
+#### code
 ```kotlin
-// application context is needed because of paper db
-val oui = OUI(CONTEXT) // automatically downloads and imports 
+// application context to find the storage path
+val oui = AndroidOUI(CONTEXT) // automatically downloads and imports 
 val entry1 = oui.lookup("A4:45:19:DE:AD:ME") // entry1 now holds an entry with the organizationName "XIAOME"
 val entry2 = oui.lookupByOrgName("amazon")
+val entry3 = oui.lookupByOrgAddress("somewhere, silicon valley")
 ```
+#### extend
+check [here](https://github.com/smthnspcl/oui/blob/master/app/src/main/java/io/eberlein/oui/AndroidOUI.kt) for an example
