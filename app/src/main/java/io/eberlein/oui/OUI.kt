@@ -4,28 +4,21 @@ import com.github.doyaaaaaken.kotlincsv.dsl.csvReader
 import kotlinx.coroutines.runBlocking
 import okhttp3.OkHttpClient
 import okhttp3.Request
-import org.jetbrains.exposed.dao.IntEntity
-import org.jetbrains.exposed.dao.IntEntityClass
-import org.jetbrains.exposed.dao.id.EntityID
-import org.jetbrains.exposed.dao.id.IntIdTable
-import org.jetbrains.exposed.sql.*
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.like
-import org.jetbrains.exposed.sql.transactions.transaction
+import org.mapdb.*
 
+class OUIEntry(var assignment: String, var orgName: String, var orgAddress: String)
 
-object OUIEntries: IntIdTable() {
-    val assignment: Column<String> = varchar("assignment", 6).uniqueIndex()
-    val orgName: Column<String> = varchar("orgName", 500)
-    val orgAddress: Column<String> = varchar("orgAddress", 500)
-    override val primaryKey = PrimaryKey(assignment)
-}
+class OUIEntrySerializer(): Serializer<OUIEntry> {
+    override fun serialize(out: DataOutput2, value: OUIEntry) {
+        out.writeUTF(value.assignment)
+        out.writeUTF(value.orgName)
+        out.writeUTF(value.orgAddress)
+    }
 
-class OUIEntry(id: EntityID<Int>): IntEntity(id) {
-    companion object: IntEntityClass<OUIEntry>(OUIEntries)
-    var assignment by OUIEntries.assignment
-    var orgName by OUIEntries.orgName
-    var orgAddress by OUIEntries.orgAddress
+    override fun deserialize(input: DataInput2, available: Int): OUIEntry {
+        return OUIEntry(input.readUTF(), input.readUTF(), input.readUTF())
+    }
+
 }
 
 open class OUI(
@@ -33,28 +26,22 @@ open class OUI(
     downloadIfNeeded: Boolean = true,
     url: String = "http://standards-oui.ieee.org/oui/oui.csv"
 ) {
+    private var db: DB = DBMaker.fileDB(savePath).closeOnJvmShutdown().make()
+    private var oui = db.hashMap("oui", Serializer.STRING, OUIEntrySerializer()).createOrOpen()
+
     init {
-        Database.connect("jdbc:h2:${savePath}", "org.h2.Driver")
-        transaction { SchemaUtils.create(OUIEntries) }
         if(downloadIfNeeded && size() == 0) import(download(url))
+    }
+
+    fun close(){
+        db.close()
     }
 
     /**
      * returns the number of keys
      * @return Int
      */
-    fun size(): Int = OUIEntry.all().count().toInt()
-
-    /**
-     * queries the OUIEntries Table
-     * @param op: Operation to execute
-     * @return OUIEntry?
-     */
-    fun query(op: Op<Boolean>): OUIEntry? {
-        var r: OUIEntry? = null
-        transaction { r = OUIEntry.find { op }.first() }
-        return r
-    }
+    fun size(): Int = oui.size
 
     /**
      * looks up a mac address and returns an OUIEntry
@@ -62,15 +49,27 @@ open class OUI(
      * @return OUIEntry?
      */
     fun lookup(mac: String): OUIEntry? {
-        return query(OUIEntries.assignment eq mac2assignment(mac)!!)
+        return oui[mac2assignment(mac)]
     }
 
     fun lookupByOrgName(orgName: String): OUIEntry? {
-        return query(OUIEntries.orgName like orgName)
+        val r = oui.filterValues { e -> e.orgName.contains(orgName) }
+        return r[r.keys.first()]
     }
 
     fun lookupByOrgAddress(orgAddress: String): OUIEntry? {
-        return query(OUIEntries.orgAddress like orgAddress)
+        val r = oui.filterValues { e -> e.orgAddress.contains(orgAddress) }
+        return r[r.keys.first()]
+    }
+
+    /**
+     * imports data from a csv into the PaperDB
+     * @param data: String
+     */
+    fun import(data: String) {
+        csvReader().readAll(data).forEach {
+            if (it[0] == "MA-L") oui.put(it[1], OUIEntry(it[1], it[2], it[3]))
+        }
     }
 
     companion object {
@@ -80,26 +79,10 @@ open class OUI(
          * @return String
          */
         fun download(url: String = "http://standards-oui.ieee.org/oui/oui.csv"): String = runBlocking {
-                val c = OkHttpClient()
-                val r = Request.Builder().url(url).build()
-                val rsp = c.newCall(r).execute()
-                rsp.body.toString()
-            }
-
-        /**
-         * imports data from a csv into the PaperDB
-         * @param data: String
-         */
-        fun import(data: String) {
-            csvReader().readAll(data).forEach {
-                if (it[0] == "MA-L") transaction {
-                    OUIEntry.new {
-                        assignment = it[1]
-                        orgName = it[2]
-                        orgAddress = it[3]
-                    }
-                }
-            }
+            val c = OkHttpClient()
+            val r = Request.Builder().url(url).build()
+            val rsp = c.newCall(r).execute()
+            rsp.body.toString()
         }
 
         /**
