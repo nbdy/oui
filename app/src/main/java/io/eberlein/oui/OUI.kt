@@ -89,6 +89,7 @@ open class OUI(
         csvReader().readAll(data).forEach {
             if (it[0] == "MA-L") storage.set(it[1], OUIEntry(it[1], it[2], it[3]))
         }
+        storage.save()
     }
 
     companion object {
