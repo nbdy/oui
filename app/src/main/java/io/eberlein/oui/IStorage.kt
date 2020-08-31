@@ -17,7 +17,10 @@ interface IOUIEntryStorage : IStorage<OUIEntry> {
      * @return String
      */
     fun getMacPrefix(mac: String, delimiter: String = ":", bytes: Int = 3): String {
-        return mac.split(delimiter).subList(0, bytes).toString()
+        var r = ""
+        mac.split(delimiter).subList(0, bytes).forEach {c -> r += c}
+        println(r)
+        return r
     }
 
     /**
@@ -32,6 +35,7 @@ interface IOUIEntryStorage : IStorage<OUIEntry> {
         return null
     }
 
+    fun randomEntry(): OUIEntry?
     fun findByMac(mac: String): OUIEntry?
     fun findByAssignment(assignment: String): OUIEntry?
     fun findByOrgName(orgName: String, contains: Boolean=false, caseInsensitive: Boolean=false): ArrayList<OUIEntry?>

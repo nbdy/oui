@@ -16,6 +16,10 @@ class GsonStorage(savePath: String) : OUIStorage(savePath) {
     override fun open() {
         if(isOpen) return
         fp = File(savePath)
+        if(!fp.isFile) {
+            fp.createNewFile()
+            fp.writeText("{}")
+        }
         data = gson.fromJson(fp.reader(), OUIEntryMap::class.java)
         isOpen = true
     }
@@ -34,6 +38,10 @@ class GsonStorage(savePath: String) : OUIStorage(savePath) {
 
     override fun size(): Int {
         return data.size
+    }
+
+    override fun randomEntry(): OUIEntry? {
+        return data[data.keys.random()]
     }
 
     override fun findByMac(mac: String): OUIEntry? {
