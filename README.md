@@ -13,7 +13,8 @@ i wanted my own mac vendor lookup library as well as some kotlin practice<br>
 
 ### usage
 #### root build.gradle
-add as [dependency](https://jitpack.io/#smthnspcl/oui)
+add as [dependency](https://jitpack.io/#smthnspcl/oui)<br>
+with android you might need to add 'android:usesCleartextTraffic="true"' to the application tag in your manifest.
 
 #### code
 ```kotlin
