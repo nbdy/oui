@@ -9,6 +9,7 @@ i wanted my own mac vendor lookup library as well as some kotlin practice<br>
 - [X] downloader
 - [X] importer for persistence
 - [X] lookup
+- [X] mac generation
 
 ### usage
 #### root build.gradle
