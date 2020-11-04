@@ -13,7 +13,7 @@ i wanted my own mac vendor lookup library as well as some kotlin practice<br>
 
 ### usage
 #### root build.gradle
-add as [dependency](https://jitpack.io/#smthnspcl/oui)<br>
+add as [dependency](https://jitpack.io/#nbdy/oui)<br>
 with android you might need to add 'android:usesCleartextTraffic="true"' to the application tag in your manifest.
 
 #### code
@@ -25,4 +25,4 @@ val entry2 = oui.lookupByOrgName("amazon")
 val entry3 = oui.lookupByOrgAddress("somewhere, silicon valley")
 ```
 #### extend
-check [here](https://github.com/smthnspcl/oui/blob/master/app/src/main/java/io/eberlein/oui/AndroidOUI.kt) for an example
+check [here](https://github.com/nbdy/oui/blob/master/app/src/main/java/io/eberlein/oui/AndroidOUI.kt) for an example
