@@ -38,6 +38,14 @@ interface IOUIEntryStorage : IStorage<OUIEntry> {
     fun randomEntry(): OUIEntry?
     fun findByMac(mac: String): OUIEntry?
     fun findByAssignment(assignment: String): OUIEntry?
-    fun findByOrgName(orgName: String, contains: Boolean=false, caseInsensitive: Boolean=false): ArrayList<OUIEntry?>
-    fun findByOrgAddress(orgAddress: String, contains: Boolean=false, caseInsensitive: Boolean=false): ArrayList<OUIEntry?>
+    fun findByOrgName(
+        orgName: String,
+        contains: Boolean = false,
+        caseInsensitive: Boolean = false
+    ): ArrayList<OUIEntry?>
+    fun findByOrgAddress(
+        orgAddress: String,
+        contains: Boolean = false,
+        caseInsensitive: Boolean = false
+    ): ArrayList<OUIEntry?>
 }

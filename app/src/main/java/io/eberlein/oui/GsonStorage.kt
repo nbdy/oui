@@ -53,20 +53,20 @@ class GsonStorage(savePath: String) : OUIStorage(savePath) {
     }
 
     override fun findByOrgName(orgName: String, contains: Boolean, caseInsensitive: Boolean): ArrayList<OUIEntry?> {
-        val c = if(caseInsensitive) orgName.toLowerCase(Locale.getDefault()) else orgName
+        val c = if(caseInsensitive) orgName.lowercase(Locale.getDefault()) else orgName
         val r = ArrayList<OUIEntry?>()
         for(e in data.values) {
-            val d = if(caseInsensitive) e.orgName.toLowerCase(Locale.getDefault()) else e.orgName
+            val d = if(caseInsensitive) e.orgName.lowercase(Locale.getDefault()) else e.orgName
             if((contains && d.contains(c)) || (!contains && d == c)) r.add(e)
         }
         return r
     }
 
     override fun findByOrgAddress(orgAddress: String, contains: Boolean, caseInsensitive: Boolean): ArrayList<OUIEntry?> {
-        val c = if(caseInsensitive) orgAddress.toLowerCase(Locale.getDefault()) else orgAddress
+        val c = if(caseInsensitive) orgAddress.lowercase(Locale.getDefault()) else orgAddress
         val r = ArrayList<OUIEntry?>()
         for(e in data.values) {
-            val d = if(caseInsensitive) e.orgAddress.toLowerCase(Locale.getDefault()) else e.orgAddress
+            val d = if(caseInsensitive) e.orgAddress.lowercase(Locale.getDefault()) else e.orgAddress
             if((contains && d.contains(c)) || (!contains && d == c)) r.add(e)
         }
         return r
