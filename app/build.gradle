@@ -1,14 +1,16 @@
-apply plugin: 'com.android.library'
-apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-android-extensions'
+plugins {
+    id 'com.android.application'
+    id 'org.jetbrains.kotlin.android'
+}
 
 android {
-    compileSdkVersion 31
-    buildToolsVersion "30.0.3"
+    namespace 'io.eberlein.oui'
+    compileSdk 34
 
     defaultConfig {
-        minSdkVersion 16
-        targetSdkVersion 31
+        applicationId "io.eberlein.oui"
+        minSdk 26
+        targetSdk 33
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -20,19 +22,39 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+
+    testOptions {
+        unitTests.all {
+            it.useJUnitPlatform()
+        }
+    }
+
+    packagingOptions {
+        resources.excludes.add("/META-INF/*")
+    }
 }
 
 dependencies {
-    implementation fileTree(dir: "libs", include: ["*.jar"])
-    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-    implementation 'androidx.core:core-ktx:1.7.0'
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.1"
-    implementation 'androidx.appcompat:appcompat:1.4.1'
-    testImplementation 'junit:junit:4.13.2'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.3'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
-    implementation 'com.squareup.okhttp3:okhttp:4.8.1'
+    implementation("androidx.core:core-ktx:1.10.1")
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.2"
+    implementation 'androidx.appcompat:appcompat:1.6.1'
+    implementation 'com.squareup.okhttp3:okhttp:4.10.0'
     implementation 'com.github.doyaaaaaken:kotlin-csv-jvm:0.11.0'
-    implementation 'com.google.code.gson:gson:2.8.6'
+    implementation 'com.google.code.gson:gson:2.8.9'
     implementation 'org.greenrobot:eventbus:3.2.0'
+
+    testImplementation("io.kotest:kotest-runner-junit5-jvm:4.6.4")
+    androidTestImplementation("io.kotest:kotest-runner-junit5-jvm:4.6.4") {
+        exclude(module: "objenesis")
+    }
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
 }
