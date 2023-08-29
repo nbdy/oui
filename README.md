@@ -1,5 +1,7 @@
 ## oui
 
+[![](https://jitpack.io/v/nbdy/oui.svg)](https://jitpack.io/#nbdy/oui)
+
 kotlin oui/mac vendor lookup
 
 ### features
